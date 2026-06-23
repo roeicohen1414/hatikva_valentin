@@ -1,0 +1,451 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <!-- Meta http equivalent was here                                     -->
+   <meta http-equiv="Content-Language" content="ru">
+   <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+   <meta name="ProgId" content="FrontPage.Editor.Document">
+   <title>::Хатиква::&nbsp; menu</title>
+
+<base target="main">
+   <style type=text/css>
+.leaf         { position: absolute; top: 0; left: 5; width: 170; z-index: 66; display: none; }
+.a1          { color: #18539A; font-weight: bold }
+.a2          { color: #000000; font-weight: bold }
+div          { font-family: Times New Roman; font-size: 10pt }
+
+.New
+{
+  background-color: #ffff66;
+  color: red;
+  font-size: 5pt;
+  font-weight: bold;
+  margin-left: 2vpx;
+  vertical-align:top;
+  padding: 1px 3px 1px 3px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+
+</style>
+<script src=js/jquery.js></script>
+<script language=JavaScript>
+// Переменные, которые нужны для работы дерева
+treeTop = 0;
+
+// Некоторые переменные, которые нужны скрипту
+nn = (document.layers)? true : false;
+ie = (document.all)? true : false;
+nn = !ie;       // blin
+openImg = new Image();
+closeImg = new Image();
+
+
+// Далее - функции, которые нужны дереву
+
+// Создаем объект - листо (в смысле ветка ;-)
+function Leaf(id,level,parent,isOpen) {
+        this.level = level;
+        this.parent = parent;
+        if (parent != '') leafs[parent].children[leafs[parent].children.length] = id;
+        this.isOpen = isOpen;
+        this.children = new Array();
+        return this;
+}
+
+// Задаем самих листьев
+leafs = new Array();
+
+leafs['leaf0'] = new Leaf('leaf0',0,'',false);
+leafs['leaf00'] = new Leaf('leaf0',0,'',false);
+leafs['leaf1'] = new Leaf('leaf1',0,'',false);
+leafs['leaf01'] = new Leaf('leaf01',1,'leaf1',false);
+
+leafs['leaf02'] = new Leaf('leaf02',1,'leaf1',false);
+leafs['leaf021'] = new Leaf('leaf021',2,'leaf02',false);
+
+
+
+
+//leafs['leaf3'] = new Leaf('leaf3',0,'',false);
+// leafs['leaf31'] = new Leaf('leaf31',1,'leaf3',false);
+
+leafs['leaf200'] = new Leaf('leaf200',0,'',false);
+leafs['leaf201'] = new Leaf('leaf201',0,'',false);
+leafs['leaf202'] = new Leaf('leaf202',0,'',false);
+leafs['leaf203'] = new Leaf('leaf203',0,'',false);
+leafs['leaf204'] = new Leaf('leaf204',0,'',false);
+leafs['leaf205'] = new Leaf('leaf205',0,'',false);
+
+
+leafs['leaf4'] = new Leaf('leaf4',0,'',false);
+leafs['leaf41'] = new Leaf('leaf41',1,'leaf4',false);
+leafs['leaf411'] = new Leaf('leaf411',2,'leaf41',false);
+leafs['leaf42'] = new Leaf('leaf42',1,'leaf4',false);
+leafs['leaf421'] = new Leaf('leaf421',2,'leaf42',false);
+
+leafs['leaf43'] = new Leaf('leaf43',1,'leaf4',false);
+leafs['leaf431'] = new Leaf('leaf431',2,'leaf43',false);
+
+leafs['leaf5'] = new Leaf('leaf5',0,'',false);
+
+leafs['leaf6'] = new Leaf('leaf6',0,'',false);
+leafs['leaf61'] = new Leaf('leaf61',1,'leaf6',false);
+leafs['leaf610'] = new Leaf('leaf610',1,'leaf6',false);
+leafs['leaf6101'] = new Leaf('leaf6101',2,'leaf610',false);
+leafs['leaf611'] = new Leaf('leaf611',1,'leaf6',false);
+leafs['leaf6110'] = new Leaf('leaf6110',2,'leaf611',false);
+
+leafs['leaf60'] = new Leaf('leaf60',0,'',false);
+leafs['leaf601'] = new Leaf('leaf601',1,'leaf60',false);
+
+leafs['leaf7'] = new Leaf('leaf7',0,'',false);
+
+
+
+
+leafs['leaf9'] = new Leaf('leaf9',0,'',false);
+leafs['leaf100'] = new Leaf('leaf100',0,'',false);
+//leafs['leaf10'] = new Leaf('leaf10',0,'',false);
+
+
+
+
+
+leafs['leaf14'] = new Leaf('leaf14',0,'',false);
+leafs['leaf141'] = new Leaf('leaf141',1,'leaf14',false);
+leafs['leaf15'] = new Leaf('leaf15',0,'',false);
+leafs['leaf16'] = new Leaf('leaf15',0,'',false);
+// Говорим, что только листья нулевого уровня должны быть видимыми
+visible = new Array()
+for (i in leafs) if (leafs[i].level == 0) visible[visible.length] = i;
+
+// Вытаскиваем все видимые под-элементы данного элемента (id - string!), результат - Array
+function visibleChildren(id) {
+        var vChildren = new Array();
+        if (leafs[id].children.length > 0) {
+                for (i in leafs[id].children) {
+                        vChildren[vChildren.length] = leafs[id].children[i];
+                        if (leafs[leafs[id].children[i]].children.length > 0 && leafs[leafs[id].children[i]].isOpen) {
+                                vChildren = vChildren.concat(visibleChildren(leafs[id].children[i]));
+                        }
+                }
+        }
+        return vChildren;
+}
+
+// Добавляем в Array все элементы другой Araay в указанном месте
+function visibleAdd(main, where, sub) {
+        var resArr = new Array();
+        for (i in main) { resArr[resArr.length] = main[i]; if (main[i] == where) for (j in sub) resArr[resArr.length] = sub[j]; }
+        return resArr;
+}
+
+// Убираем из однай Array все элементы другой Array
+function visibleRemove(main, sub) {
+        for (i in main) for (j in sub) if (main[i] == sub[j]) delete main[i];
+        return main;
+}
+
+// Стандартная кроссбраузерная функция, которая выстраивает по вертикали дивчиков, на входе - Array с их именами
+function vertPlace(which) {
+        var currTop = treeTop;
+                var pos;
+        for (i in which)
+                {
+                  $('#'+which[i]).css('top', currTop);
+                  currTop += $('#'+which[i]).height()+1;
+                }
+//        if (nn) for (i in which) {
+//                document.layers[which[i]].top = currTop;
+//                currTop += document.layers[which[i]].document.height + 1;
+//        }
+//        if (ie) for (i in which) {
+//                document.all[which[i]].style.top = currTop;
+//                currTop += document.all[which[i]].offsetHeight + 1;
+//        }
+}
+
+// Стандартная кроссбраузерная функция показывающая слой
+function showLeer(which) {
+  $('#'+which).show();
+//        if (nn) $('#'+which').show();
+//        if (ie) document.all[which].style.visibility = "visible";
+}
+
+// Стандартная кроссбраузерная функция скрывающая слой
+function hideLeer(which) {
+  $('#'+which).hide();
+//        if (nn) document.layers[which].visibility = "hide";
+//        if (ie) document.all[which].style.visibility = "hidden";
+}
+
+// Качаем ветку, или показываем, или скрываем в зависимости от состояния
+function moveBough(which) {
+        changingElems = visibleChildren(which);
+//              alert(which+"Img");
+        if (leafs[which].isOpen) {
+                visible = visibleRemove(visible,changingElems);
+                for (i in changingElems) hideLeer(changingElems[i]);
+                leafs[which].isOpen = false;
+
+        } else {
+                visible = visibleAdd(visible,which,changingElems);
+                for (i in changingElems) showLeer(changingElems[i]);
+                leafs[which].isOpen = true;
+
+        }
+        vertPlace(visible);
+}
+
+// Запускаем все это!
+function init() {
+        for (i in visible) showLeer(visible[i]);
+        vertPlace(visible);
+}
+
+</script>
+</head>
+<body onLoad="init();" bgcolor="#F4F4F4" topmargin="0">
+
+<div id="leaf0" class="leaf">
+
+<p align="left">
+
+<a href=main.html><img border="0" src="menu.files/log_menu.jpg" width="170" height="35"></a></div>
+<div id="leaf00" class="leaf">
+<a href="o_nas.htm" class="a1">НАША ОБЩИНА</a>
+</div><div id="leaf1" class="leaf">
+
+<b>&nbsp;
+</b><a href="#" class="a1" onClick="moveBough('leaf1'); return false;"> ЧТО
+ТАКОЕ<br>&quot;СЫНОВЬЯ НОЯ&quot;</a>
+</div><div id="leaf01" class="leaf">
+
+<b>
+<a href="7_zap.htm" class="a2">7 заповедей (кратко)</a><br>
+<a href="postateist.htm" class="a2">Постатеистическая религиозность...</a><br>
+<a href="7_229.htm" class="a2" target="main">7 законов-229 заповедей</a><br>
+
+<a href="molitv.htm" class="a2">Сборник молитв</a><br>
+<a href="j/Poesij_molitv.doc" class="a2">Поэзия молитвы</a><br>
+<a href="svet-narodam.htm" class="a2">Свет народам</a><span class="New">NEW!</span><br>
+<a href="neevrei-i-tora.htm" class="a2">Неевреи и Тора</a><span class="New">NEW!</span>
+
+</div>
+<div id="leaf02" class="leaf">
+
+<a href="#" class="a2" onClick="moveBough('leaf02'); return false;">Й. Шварц "Семь Законов"</a>
+</div><div id="leaf021" class="leaf">
+<a href="7_zakonov/1.htm">Гл.1 Человек - в вечном поиске</a><br>
+<a href="7_zakonov/2.htm">Гл.2 Чем является наша жизнь в этом мире</a><br>
+<a href="7_zakonov/3.htm">Гл.3 Духовные качества души человека</a><br>
+
+<a href="7_zakonov/4.htm">Гл.4 Семь заповедей потомкам Ноя</a><br>
+<a href="7_zakonov/5.htm">Гл.5 Заповеди, возложенные на человека</a><br>
+<a href="7_zakonov/6.htm">Гл.6 Подробности законов для сыновей Ноя</a><br>
+<a href="7_zakonov/7.htm">Гл.7 Точка зрения Торы на этот мир и на мир грядущий</a>
+</div>
+
+<div id="leaf3" class="leaf" style="display:none">
+
+<a href="#" class="a1"onClick="moveBough('leaf3'); return false;">ЕВРЕЙСКАЯ БИБЛИЯ</a>
+</div><div id="leaf31" class="leaf">
+
+<a href="http://www.judaicaru.org/limudim/limudim_0_2.html#B1" class="a2">О ТаНаХе</a><br>
+<a href="http://www.machanaim.org/inform/tabls/s1.htm" class="a2" target="_blank">Структура ТаНаХа</a><br>
+<a href="http://www.machanaim.org/inform/tabls/s2.htm" class="a2" target="_blank">Родословное дерево персонажей Торы</a><br>
+      </div>
+
+<div id="leaf200" class="leaf">
+<a href="http://www.machanaim.org/tanach/in_tnh.htm#tora" target="_blank" class="a1">ТОРА (ПЯТИКНИЖИЕ)</a>
+</div>
+
+<div id="leaf201" class="leaf">
+<a href="j/comments/" class="a1">СТАТЬИ&mdash;КОММЕНТАРИИ</a>
+
+</div>
+
+<div id="leaf202" class="leaf">
+<a href="j/proroki/" class="a1">ПРОРОКИ И ПИСАНИЯ</a>
+</div>
+
+<div id="leaf203" class="leaf">
+<a href="j/judaizm/" class="a1">&quot;ИУДАИЗМ &mdash; ДЛЯ ВСЕХ&quot;</a>
+</div>
+
+<div id="leaf204" class="leaf">
+<a href="j/judaizm/Izbrannie statji/" class="a1">ИЗБРАННЫЕ СТАТЬИ</a>
+</div>
+
+<div id="leaf205" class="leaf">
+<nobr><a href="evrei i narody/Evrei i narody segodnja.htm" class="a1">ЕВРЕИ И НАРОДЫ СЕГОДНЯ</a></nobr>
+</div>
+
+<div id="leaf4" class="leaf">
+
+<a href="#" class="a1" onClick="moveBough('leaf4'); return false;">БИБЛИОТЕКА</a>
+</div><div id="leaf41" class="leaf">
+
+<a href="#"  class="a2" onClick="moveBough('leaf41'); return false;">История</a>
+&nbsp;
+</div><div id="leaf411" class="leaf">
+
+<a href="http://www.machanaim.org/inform/tabls/culture.htm" target="_blank">"Общая схема истории&quot;</a><br>
+<a href="http://www.machanaim.org/inform/tabls/t1.htm" target="_blank">Основные периоды истории еврейской культуры</a><br>
+
+<a href="http://jhistory.nfurman.com/code/2t.htm">Литература</a><br>
+<a href="http://www.machanaim.org/history/in_sultan.htm">З.Султанович "Живая связь"</a>
+</div><div id="leaf42" class="leaf">
+
+<a href="#" class="a2" onClick="moveBough('leaf42'); return false;">Иудаизм</a>
+</div><div id="leaf421" class="leaf">
+
+<a href="http://www.judaicaru.org/navigator/articles.html#1">Адин Штейнзальц Статьи<br></a>
+<a href="j/talmud.htm">В.Соловьев &quot;О
+Талмуде&quot;</a><br>
+<a href="http://www.evrey.com/texts/znakom.htm">М. Гитик "Знакомьтесь-еврейство"</a><br>
+
+<a href="http://school.ort.spb.ru/(Eng)/library/torah/traditions/epshtein000.htm">И.Эпштейн "Иудаизм"</a><br>
+<a href="http://www.machanaim.org/tanach/in_bik.htm">Библейская критика </a><br>
+<a href="http://www.machanaim.org/history/hram/s-neym.htm">Ш.Нееман "Значение Иерусалимского Храма"</a><br>
+<a href="http://www.machanaim.org/tor&life/hist&geo/zionism.htm">П.Полонский "Эволюция идеологии сионизма"</a><br>
+<a href="http://www.machanaim.org/ustntora/byal/galacha.htm">Х.Н.Бялик "Галаха и Агада"</a><br>
+<a href="http://www.machanaim.org/inform/tabls/t2.htm">Таблица Галаха и Агада</a><br>
+<a href="galaha.htm">Понятие о Галахе</a><br>
+<a href="http://www.machanaim.org/ustntora/in_ant.htm">Малая Еврейская Антология</a>
+
+</div>
+<div id="leaf43" class="leaf">
+
+<a href="#" class="a2" onClick="moveBough('leaf43'); return false;">Философия</a>
+</div><div id="leaf431" class="leaf">
+
+<a href="http://school.ort.spb.ru/(Eng)/library/torah/traditions/religio/religio000.htm">Б.И.Берман "Библейские смыслы"</a><br>
+<a href="http://www.machanaim.org/philosof/in_ramb.htm">РАМБАМ</a><br>
+<a href="http://www.machanaim.org/philosof/in_kuk.htm">РАВ А-И КУК и философия религиозного сионизма</a><br>
+<a href="http://www.machanaim.org/philosof/in_solov.htm">Paв Й.Д.Соловейчик</a><br>
+<a href="http://www.machanaim.org/philosof/in_vv.htm">Й.Бен-Шломо "Введение в философию иудаизма"</a><br>
+
+<a href="http://www.machanaim.org/philosof/in_ph.htm">П.Полонский "Введение в философию иудаизма"</a><br>
+<a href="http://www.machanaim.org/tanach/in_2i.htm">П.Полонский "Две истории сотворения мира"</a><br>
+<a href="http://www.machanaim.org/philosof/in_vera.htm">Э.Беркович "Вера после Катастрофы"</a><br>
+<a href="http://www.machanaim.org/philosof/in_mph.htm">М.Левинов "Средневековая еврейская философия"</a><br>
+<a href="http://www.machanaim.org/tor&amp;life/in_borm.htm">Э.Бормашенко "Статьи"</a>
+</div><div id="leaf5" class="leaf">
+
+<a href="http://www.machanaim.org/ind_praz.htm" class="a1">КАЛЕНДАРЬ</a>
+</div><div id="leaf6" class="leaf">
+
+<a href="#" class="a1" onClick="moveBough('leaf6'); return false;">СЕМЬЯ</a>
+
+</div><div id="leaf61" class="leaf">
+
+
+<a HREF="http://www.judaicaru.org/mekorhaim/avot_31.html" class="a2">Еврейская семья</a><br>
+<a HREF="http://www.machanaim.org/tanach/in_ir.htm" class="a2">М.Столяр "И расскажи сыну своему..."</a><br>
+<a HREF="agu_buka.htm" class="a2">С.Соловейчик “АГУ”и“БУКА”</a>
+</div><div id="leaf610" class="leaf">
+<a href="#" onClick="moveBough('leaf610'); return false;" class="a2">А.Фельдман "Река, котел и птица"</a>
+</div><div id="leaf6101" class="leaf">
+<a HREF="j/reka/1.htm">1.Название этой книги</a><br>
+<a href="j/reka/2.htm">2.Почему распадаются семьи</a><br>
+<a href="j/reka/3.htm">3.Фантазии и реальность супружеской жизни</a><br>
+<a href="j/reka/4.htm">4.Обучение основам</a><br>
+<a href="j/reka/5.htm">5.Понимание женской натуры</a><br>
+<a href="j/reka/6.htm">6.Еще о женской натуре</a><br>
+<a href="j/reka/7.htm">7.Гилель и причины гнева</a><br>
+<a href="j/reka/8.htm">8.Настоящие и выдуманные обиды</a><br>
+<a href="j/reka/9.htm">9.Гнев под контролем</a><br>
+<a href="j/reka/10.htm">10.Бесполезность гнева</a><br>
+<a href="j/reka/11.htm">11.Любовь и ее катализаторы</a><br>
+
+<a href="j/reka/12.htm">12.Признательность</a><br>
+<a href="j/reka/13.htm">13.Скрепляя узы</a>
+</div>
+<div id="leaf611" class="leaf">
+
+<a href="#" class="a2" onClick="moveBough('leaf611'); return false;">БРАК</a>
+</div><div id="leaf6110" class="leaf">
+<a href="brak.htm">Будьте счастливы в браке</a><br>
+<a href="legka-li-zhizn-b-brake.html">Легкая ли жизнь в браке?</a><br>
+<a href="brak-i-semya-v-evreyskoy-traditsii.html">Брак и семья в еврейской традиции</a><br>
+<a href="svyatost-vremeni.html">Святость времени</a><br>
+<a href="evreyskit-brak.html">Еврейский брак</a>
+</div>
+
+
+<div id="leaf450" class="leaf">
+<nobr><a href="lyubov-k-blizhnemu.html" class="a1">О ЛЮБВИ</a></nobr>
+</div>
+
+<div id="leaf7" class="leaf">
+
+
+<!--<a href="http://www.evrey.com/sitep/ethics/index.php3" class="a1">ЭТИКА</a>-->
+</div><div id="leaf9" class="leaf">
+
+<a href="http://www.judaicaru.org/encycl/encycl.html" class="a1">ЭНЦИКЛОПЕДИЯ</a>
+</div><div id="leaf100" class="leaf">
+
+<a href="14 glossary.htm" class="a1">ГЛОССАРИЙ</a>
+</div><div id="leaf10" class="leaf" style="display:none">
+
+<a href="http://www.evrey.com/sitep/Audio/" class="a1">АУДИО-УРОКИ</a>
+</div>
+<div id="leaf14" class="leaf">
+
+<!--<a href="mailto:hatikva@mail.ru" class="a1" target=_blank>КОНТАКТ</a>-->
+
+<div style="margin-top: 20px; font-weight: bold;">
+  ССЫЛКИ:
+</div>
+
+<table border=0 cellpadding=0 cellspacing=0>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://www.eleven.co.il/" title="Электронная еврейская энциклопедия" target="_blank">Еврейская энциклопедия</a>
+  </tr>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://www.abaratz.com/" title="Иудаизм, экзистенциализм, сионизм" target="_blank">А. Барац</a>
+  </tr>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://www.sedmoykanal.com/lenta.php" title="Седьмой Канал - Израильские новости на русском языке. Лента Новостей" target="_blank">Радио &quot;Седьмой канал&quot;</a>
+  </tr>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://www.machanaim.org/" title="Маханаим - еврейский культурно-религиозный центр для русско-говорящих евреев" target="_blank">Маханаим</a>
+  </tr>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://www.evrey.com/" target="_blank">Еврей.com</a>
+  </tr>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://www.toldot.ru/" title="Иудаизм и евреи" target="_blank">Толдот Йешурун</a>
+  </tr>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://www.midrasha.net/" title="Мидраша.net - Мидраша Ционит - еврейское сионистское образование" target="_blank">Мидраша Ционит</a>
+  </tr>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://samsonblinded.org/rublog/" title="Ослепленный Самсон: ближневосточный конфликт с позиций Макиавелли" target="_blank">Ослепленный Самсон</a>
+  </tr>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://www.jewniversity.org/" title="рав Менахем Михаэль Гитик Тора недельная глава кабала книги литеракура аудио видео лекции семинары" target="_blank">Jewniversity</a>
+  </tr>
+  <tr valign=top>
+    <td><img src="images/li.gif" width="13" height="13"></td>
+    <td><a href="http://community.livejournal.com/ru_bneinoah/" title="Сообщество Бней Ноах" target="_blank">Сообщество Бней Ноах</a>
+  </tr>
+</table>
+
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+RewriteEngine on
+
+RewriteCond %{HTTP_HOST} ^hatikva-ua.com [nc]
+RewriteRule ^(.*)$ http://www.hatikva-ua.com/$1 [r=301,nc,L]

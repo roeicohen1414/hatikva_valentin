@@ -1,0 +1,17 @@
+[build]
+  publish = "/opt/build/repo"
+
+[[headers]]
+  for = "/**/*.html"
+  [headers.values]
+    Content-Type = "text/html; charset=windows-1251"
+
+[[headers]]
+  for = "/**/*.htm"
+  [headers.values]
+    Content-Type = "text/html; charset=windows-1251"
+
+[[headers]]
+  for = "/**/*.js"
+  [headers.values]
+    Content-Type = "application/javascript; charset=windows-1251"
