@@ -1,0 +1,9 @@
+
+*.html  working-tree-encoding=cp1251 git-encoding=utf-8
+*.htm   working-tree-encoding=cp1251 git-encoding=utf-8
+*.css   working-tree-encoding=cp1251 git-encoding=utf-8
+*.js    working-tree-encoding=cp1251 git-encoding=utf-8
+*.csv   working-tree-encoding=cp1251 git-encoding=utf-8
+*.json  working-tree-encoding=cp1251 git-encoding=utf-8
+*.xml   working-tree-encoding=cp1251 git-encoding=utf-8
+*.txt   working-tree-encoding=cp1251 git-encoding=utf-8
