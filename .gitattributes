@@ -1,9 +1,0 @@
-
-*.html -text  
-*.htm  -text  
-*.css  -text  
-*.js   -text 
-*.csv  -text  
-*.json -text  
-*.xml  -text
-*.txt  -text 
